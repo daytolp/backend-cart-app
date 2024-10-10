@@ -27,14 +27,18 @@ public class UserServiceImpl implements UserService {
     private PasswordEncoder passwordEncoder;
     @Override
     @Transactional(readOnly = true)
-    public List<User> findAll() {
+    public List<UserDTO> findAll() {
         List<User> users = (List<User>) repository.findAll();
         return users
                 .stream()
                 .map(u -> {
                     boolean isAdmin = u.getRoles().stream().anyMatch(r -> Constantes.ROL_ADMIN.equals(r.getName()));
-                    u.setAdmin(isAdmin);
-                    return u;
+                    UserDTO dto = new UserDTO();
+                    dto.setId(u.getId());
+                    dto.setAdmin(isAdmin);
+                    dto.setEmail(u.getEmail());
+                    dto.setUsername(u.getUsername());
+                    return dto;
                 })
                 .collect(Collectors.toList());
     }
@@ -47,7 +51,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     @Transactional
-    public User save(User user) {
+    public UserDTO save(User user) {
         List<Role> roles = new ArrayList<>();
         roles.add(roleRepository.findByname(Constantes.ROL_USER));
         if (user.isAdmin()) {
@@ -55,14 +59,23 @@ public class UserServiceImpl implements UserService {
         }
         user.setRoles(roles);
         user.setPassword(passwordEncoder.encode(user.getPassword()));
-        return repository.save(user);
+        User userSaved = repository.save(user);
+
+        UserDTO dto = new UserDTO();
+        dto.setId(userSaved.getId());
+        dto.setAdmin(user.isAdmin());
+        dto.setEmail(userSaved.getEmail());
+        dto.setUsername(userSaved.getUsername());
+
+        return dto;
     }
 
     @Override
     @Transactional
-    public Optional<User> update(UserDTO user, Long id) {
+    public Optional<UserDTO> update(UserDTO user, Long id) {
         Optional<User> o = this.findById(id);
-        User userOptional = null;
+
+        UserDTO dto = new UserDTO();
         if (o.isPresent()) {
             List<Role> roles = new ArrayList<>();
             roles.add(roleRepository.findByname(Constantes.ROL_USER));
@@ -74,9 +87,15 @@ public class UserServiceImpl implements UserService {
             userDb.setRoles(roles);
             userDb.setUsername(user.getUsername());
             userDb.setEmail(user.getEmail());
-            userOptional = this.save(userDb);
+            User userOptional = repository.save(userDb);
+
+           
+            dto.setId(userOptional.getId());
+            dto.setAdmin(user.isAdmin());
+            dto.setEmail(userOptional.getEmail());
+            dto.setUsername(userOptional.getUsername());
         }
-        return Optional.ofNullable(userOptional);
+        return Optional.ofNullable(dto);
     }
 
     @Override

@@ -34,7 +34,7 @@ public class UserController {
     private UserService service;
 
     @GetMapping
-    public List<User> list() {
+    public List<UserDTO> list() {
         return service.findAll();
     }
 
@@ -65,7 +65,7 @@ public class UserController {
         if (result.hasErrors()) {
            return this.validation(result);
         }
-        Optional<User> o = service.update(user, id);
+        Optional<UserDTO> o = service.update(user, id);
         if (o.isPresent()) {
             return ResponseEntity.status(HttpStatus.CREATED).body(o.orElseThrow());
         }
