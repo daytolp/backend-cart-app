@@ -73,7 +73,7 @@ public class JWTAuthorizationFilter extends BasicAuthenticationFilter {
             body.put(Constantes.ERROR, e.getMessage());
             body.put(Constantes.MESSAGE, Constantes.M0001);
             response.getWriter().write(new ObjectMapper().writeValueAsString(body));
-            response.setStatus(Constantes.STATUS_HTTP_403);
+            response.setStatus(Constantes.STATUS_HTTP_401);
             response.setContentType(Constantes.APPLICATION_JSON);
         }        
     }

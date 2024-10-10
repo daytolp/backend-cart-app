@@ -43,6 +43,9 @@ public class UserServiceImpl implements UserService {
     public User save(User user) {
         List<Role> roles = new ArrayList<>();
         roles.add(roleRepository.findByname(Constantes.ROL_USER));
+        if (user.isAdmin()) {
+            roles.add(roleRepository.findByname(Constantes.ROL_ADMIN));
+        }
         user.setRoles(roles);
         user.setPassword(passwordEncoder.encode(user.getPassword()));
         return repository.save(user);
@@ -54,7 +57,14 @@ public class UserServiceImpl implements UserService {
         Optional<User> o = this.findById(id);
         User userOptional = null;
         if (o.isPresent()) {
+            List<Role> roles = new ArrayList<>();
+            roles.add(roleRepository.findByname(Constantes.ROL_USER));
+            if (user.isAdmin()) {
+                roles.add(roleRepository.findByname(Constantes.ROL_ADMIN));
+            }
+
             User userDb = o.orElseThrow();
+            userDb.setRoles(roles);
             userDb.setUsername(user.getUsername());
             userDb.setEmail(user.getEmail());
             userOptional = this.save(userDb);
