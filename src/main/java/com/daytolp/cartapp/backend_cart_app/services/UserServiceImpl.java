@@ -1,13 +1,12 @@
 package com.daytolp.cartapp.backend_cart_app.services;
 
 import java.util.*;
-import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
+import java.util.stream.Collectors;
 import com.daytolp.cartapp.backend_cart_app.constants.Constantes;
 import com.daytolp.cartapp.backend_cart_app.dtos.UserDTO;
 import com.daytolp.cartapp.backend_cart_app.models.entities.Role;
@@ -29,7 +28,15 @@ public class UserServiceImpl implements UserService {
     @Override
     @Transactional(readOnly = true)
     public List<User> findAll() {
-        return (List<User>) repository.findAll();
+        List<User> users = (List<User>) repository.findAll();
+        return users
+                .stream()
+                .map(u -> {
+                    boolean isAdmin = u.getRoles().stream().anyMatch(r -> Constantes.ROL_ADMIN.equals(r.getName()));
+                    u.setAdmin(isAdmin);
+                    return u;
+                })
+                .collect(Collectors.toList());
     }
 
     @Override

@@ -18,6 +18,8 @@ import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.Size;
 import lombok.Data;
 import java.util.*;
+
+import com.fasterxml.jackson.annotation.JsonIgnore;
 @Data
 @Entity
 @Table(name="users")
@@ -32,6 +34,7 @@ public class User {
     @Column(unique = true)
     private String username;
 
+    @JsonIgnore
     @NotEmpty
     private String password;
 
