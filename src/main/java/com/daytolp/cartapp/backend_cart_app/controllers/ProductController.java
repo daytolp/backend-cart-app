@@ -9,7 +9,7 @@ import java.util.List;
 import com.daytolp.cartapp.backend_cart_app.models.entities.Product;
 import com.daytolp.cartapp.backend_cart_app.services.ProductService;
 
-@CrossOrigin(origins = "http://localhost:5173")
+// @CrossOrigin(origins = "http://localhost:5173")
 @RestController
 public class ProductController {
     @Autowired
